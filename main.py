@@ -1,7 +1,6 @@
 import logging
 from websocket_server import WebsocketServer
 from components.game import Game
-from uuid import UUID
 import json
 
 server = WebsocketServer(13254, host='0.0.0.0', loglevel=logging.INFO)
