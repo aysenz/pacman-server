@@ -1,6 +1,7 @@
 from random import random
 from map import Map
-from artifact import Artifact
+from artifact import Artifact, ArtifactType
+from artifact_manager import ArtifactManager
 from threading import Timer
 
 class Hero():
@@ -9,25 +10,24 @@ class Hero():
   def __init__(self, id, name):
     self.id = id
     self.name = name
-    map = Map()
-    self.x = map.get_size('x') * random()
-    self.y = map.get_size('y') * random()
+    self.x = Map.WIDTH * random()
+    self.y = Map.HEIGHT * random()
     self.diameter = self.MIN_DIAMETER
     self.speed = self.MIN_SPEED
   def eat_artifact(self, artifact):
-    diameter_diff = artifact.diameter / self.diameter
-    if Artifact.TYPES['POTATO'] == artifact.type:
-      self.diameter += diameter_diff * self.MIN_DIAMETER 
-    elif Artifact.TYPES['POTION'] == artifact.type:
-      if self.diameter >= self.MIN_DIAMETER:
-        self.diameter -= diameter_diff * self.MIN_DIAMETER
-        if self.diameter < self.MIN_DIAMETER: self.diameter = self.MIN_DIAMETER
-    elif Artifact.TYPES['MEATBALL'] == artifact.type:
-      self.speed += 2
+    if ArtifactType.POTATO == artifact.type:
+      self.diameter += artifact.diameter
+    elif ArtifactType.POTION == artifact.type:
+      # self.diameter = self.MIN_DIAMETER
+      if (self.diameter - artifact.diameter) >= self.MIN_DIAMETER:
+        self.diameter = self.diameter - artifact.diameter
+    elif ArtifactType.MEATBALL == artifact.type:
+      self.speed += 1
       def fun():
-        self.speed -= 2
+        self.speed -= 1
       t = Timer(3.0, fun)
       t.start()
+    ArtifactManager.eated_artifact(artifact)
   def eat_hero(self, hero):
     return
   def die(self):
